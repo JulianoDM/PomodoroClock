@@ -4,11 +4,12 @@
       <v-row>
         <v-col>
           <div width="500" class="d-flex justify-center">
-            <span>#0</span>
+            <span>#{{ taskCounter }}</span>
           </div>
           <div width="500" class="d-flex justify-center">
             <span>Task</span>
           </div>
+
           <v-responsive id="responsive_input" class="mx-auto" max-width="500">
             <v-text-field
               @keydown.enter="addTask($event.target.value)"
@@ -19,31 +20,30 @@
               dense
               solo
               flat
+              v-model="letterCount"
+              :rules="rules"
+              counter
+              maxlength="200"
+              hint="This field uses maxlength attribute"
             ></v-text-field>
           </v-responsive>
+          <div class="counter">
+            <p class="">{{ letterCount.length }}/200</p>
+          </div>
+
           <v-card
             v-for="(task, index) in tasks"
             :key="task.id"
-            width="500"
+            max-width="500"
+            :color=task.color
             class="mx-auto mt-3 d-flex align-center justify-space-between"
             elevation="5"
-            @click="confirmTask($event.target)"
+            @click="confirmTask(task)"
           >
-            <v-card-title id="cardName">{{ task.name }}</v-card-title>
-            <v-menu offset-y>
-              <template v-slot:activator="{ on, attrs }">
-                <v-btn elevation="0"  v-bind="attrs" v-on="on">
-                  <v-icon>
-                    mdi-dots-vertical
-                  </v-icon>
-                </v-btn>
-              </template>
-              <v-list>
-                <v-list-item>
-                  <v-list-item-title @click="removeTask(index)">Remove Task</v-list-item-title>
-                </v-list-item>
-              </v-list>
-            </v-menu>
+            <p class="taskConfirm ma-5">{{task.name}}</p>
+            <v-btn small class="my-5 mr-2" @click="removeTask(index)"
+              >Remove</v-btn
+            >
           </v-card>
         </v-col>
       </v-row>
@@ -57,9 +57,14 @@ export default {
     return {
       buttonSettings: true,
       buttonName: "Start",
+
       tasks: [],
       textInput: "add a task",
       taskId: 0,
+      taskCounter: 0,
+      letterCount: "",
+      rules: [(v) => v.length <= 200 || "Max 200 characters"],
+      
     };
   },
 
@@ -74,12 +79,19 @@ export default {
       if (task === "") {
         this.clearInput();
         this.textInput = "empty task";
+      } else if (this.taskCounter == 5) {
+        alert("task over the limit");
+        this.letterCount = "";
+        this.textInput = "Finish a task";
       } else {
         const add = {
           name: task,
           id: this.taskId,
+          color: "white"
         };
+        this.letterCount = "";
         this.taskId++;
+        this.taskCounter++;
         this.clearInput();
         this.tasks.push(add);
 
@@ -88,12 +100,16 @@ export default {
     },
 
     confirmTask(task) {
-      let content = task;
-      content.classList.toggle("confirm");
+      if(task.color == 'white'){
+        task.color = 'green'
+      }else{
+        task.color = 'white'
+      }
     },
 
     removeTask(index) {
       this.tasks.splice(index, 1);
+      this.taskCounter--;
     },
 
     clearInput() {
@@ -104,8 +120,14 @@ export default {
 </script>
 
 <style>
-.confirm {
-  background-color: green;
-  color: whitesmoke;
+.textTesk {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: break-word;
+}
+
+.counter {
+  display: flex;
+  justify-content: center;
 }
 </style>

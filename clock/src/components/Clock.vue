@@ -5,11 +5,14 @@
         <v-col>
           <v-card width="500" class="mx-auto">
             <v-card-actions>
-              <v-tabs show-arrows centered>
+              <v-tabs show-arrows 
+              v-model="tab"
+              centered>
                 <v-tab
                   v-for="timer in timers"
                   :key="timer"
-                  @click="changeTimer(timer)"
+                  
+                  @click="changeTimer(timer, $event.target.value)"
                   >{{ timer }}</v-tab
                 >
               </v-tabs>
@@ -37,11 +40,18 @@
                 {{ buttonName }}
               </v-btn>
             </v-card-actions>
+            <audio class="clockStart">
+              <source src="../assets/clockStart.mp3">
+            </audio>
+            <audio class="clockAlarm">
+              <source src="../assets/clockAlarm.mp3">
+            </audio>
           </v-card>
         </v-col>
       </v-row>
     </v-container>
-    <ToDo />
+    <ToDo/>
+   
   </div>
 </template>
 
@@ -53,15 +63,21 @@ export default {
   data() {
     return {
       timers: ["Pomodoro", "Short Break", "Long Break"],
+      tempo: 'Pomodoro',
+      tab: null,
+      counter: 0,
 
       timer: {
-        minutes: 25,
-        seconds: 0,
+        minutes: 0,
+        seconds: 2,
       },
+
       buttonSettings: true,
       buttonName: "Start",
     };
   },
+
+  
 
   computed: {
     backColor() {
@@ -69,8 +85,15 @@ export default {
     },
   },
 
+  watch:{
+    tab(val){
+      console.log(val);
+    }
+  },
+
   methods: {
     changeTimer(name) {
+      
       if (name === "Short Break") {
         this.backColor.default = this.backColor.short;
         this.timer.minutes = 5;
@@ -81,15 +104,19 @@ export default {
         this.timer.seconds = 0;
       } else {
         this.backColor.default = "red accent-2";
-        this.timer.minutes = 25;
-        this.timer.seconds = 0;
+        this.timer.minutes = 0;
+        this.timer.seconds = 2;
       }
     },
 
     start() {
+      let clockStart = document.querySelector('.clockStart')
+      let clockAlarm = document.querySelector('.clockAlarm')
       if (this.buttonSettings === true) {
         this.buttonName = "Stop";
         this.buttonSettings = false;
+        
+        clockStart.play();
 
         this.interval = setInterval(() => {
           if (this.timer.seconds == 0) {
@@ -99,15 +126,35 @@ export default {
             this.timer.seconds--;
           }
           if (this.timer.minutes <= 0 && this.timer.seconds <= 0) {
+            clockAlarm.play()
             clearInterval(this.interval);
-            alert("Time's up");
+            
+            
+            if(this.tab == 0){
+              this.counter ++
+              if(this.counter == 3){
+                this.tab = 2
+                this.changeTimer('Long Break')
+                this.counter = 0 
+              }else{
+                  this.tab = 1
+                  this.changeTimer('Short Break')
+                  console.log(this.counter);
+                }
+                
+             }else{
+              this.tab = 0
+              this.changeTimer('Pomodoro')
+             }
           }
         }, 1000);
       } else {
-        this.buttonName = "Start";
-        clearInterval(this.interval);
-        this.buttonSettings = true;
-        console.log(this.interval);
+          clockStart.pause();
+          clockStart.currentTime = 0;
+          this.buttonName = "Start";
+          clearInterval(this.interval);
+          this.buttonSettings = true;
+          
       }
     },
   },
