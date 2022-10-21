@@ -40,7 +40,7 @@
             elevation="5"
             @click="confirmTask(task)"
           >
-            <p class="taskConfirm ma-5">{{task.name}}</p>
+            <p class="textTesk taskConfirm ma-5">{{task.name}}</p>
             <v-btn small class="my-5 mr-2" @click="removeTask(index)"
               >Remove</v-btn
             >
@@ -94,7 +94,6 @@ export default {
         this.taskCounter++;
         this.clearInput();
         this.tasks.push(add);
-
         this.textInput = "add a task";
       }
     },
