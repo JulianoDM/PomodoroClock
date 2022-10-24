@@ -1,8 +1,5 @@
 <template>
   <div>
-    <p>{{ pomodoro.minutes }}</p>
-    <p>{{ pomodoro.short }}</p>
-    <p>{{ pomodoro.pomodoro }}</p>
     <v-container class="clock">
       <v-row>
         <v-col>
@@ -18,33 +15,24 @@
               </v-tabs>
             </v-card-actions>
             <div>
-              <p
+              <v-card-text
                 v-if="names == 'Short Break'"
-                class="short d-flex justify-center text-h1 grey--text"
+                class="d-flex justify-center text-h1 grey--text"
+                
               >
-                {{ short.minutes }}:{{ short.seconds }}
-              </p>
+                {{ short.minutes }}:{{zeros.zeroS}}{{ short.seconds}}
+              </v-card-text>
 
-              <p
+              <v-card-text
                 v-else-if="names == 'Long Break'"
                 class="d-flex justify-center text-h1 grey--text"
               >
-                {{ long.minutes }}:{{ long.seconds }}
-              </p>
-              <p v-else class="d-flex justify-center text-h1 grey--text">
-                {{ pomodoro.minutes }}:{{ pomodoro.seconds }}
-              </p>
+                {{ long.minutes }}:{{zeros.zeroL}}{{ long.seconds }}
+              </v-card-text>
+              <v-card-text v-else class="d-flex justify-center text-h1 grey--text">
+                {{ pomodoro.minutes}}:{{zeros.zeroP}}{{ pomodoro.seconds }}
+              </v-card-text>
 
-              <!-- <v-card-text
-                v-if="pomodoro.seconds < 10"
-                class="d-flex justify-center text-h1 grey--text"
-                >{{ pomodoro.minutes }}:0{{ pomodoro.seconds }}</v-card-text
-              >
-              <v-card-text
-                v-else
-                class="d-flex justify-center text-h1 grey--text"
-                >{{ pomodoro.minutes }}:{{ pomodoro.seconds }}</v-card-text
-              > -->
             </div>
             <v-card-actions>
               <v-btn
@@ -83,6 +71,9 @@ export default {
       tab: null,
       counter: 0,
       names: "",
+      zeros:{
+        zeroP:"0", zeroS: "0", zeroL:"0"
+      },
 
       buttonSettings: true,
       buttonName: "Start",
@@ -110,9 +101,12 @@ export default {
     timer() {
       return this.$store.state.timer;
     },
+
   },
 
-  watch: {},
+  watch: {
+    
+  },
 
   methods: {
     changeTimer(name) {
@@ -123,30 +117,61 @@ export default {
         this.backColor.default = this.backColor.short;
         this.short.minutes = this.short.short;
         this.short.seconds = 0;
+        this.zeroTimerS();
 
         this.pomodoro.minutes = this.pomodoro.error;
         this.long.minutes = this.pomodoro.error;
         this.pause(clockStart);
       } else if (name === "Long Break") {
         this.names = name;
-
+      
         this.backColor.default = this.backColor.long;
         this.long.minutes = this.long.long;
         this.long.seconds = 0;
-
+        this.zeroTimerL();
+        
         this.pomodoro.minutes = this.pomodoro.error;
         this.short.minutes = this.pomodoro.error;
         this.pause(clockStart);
       } else {
         this.names = "Pomodoro";
+        
         this.backColor.default = "red accent-2";
         this.pomodoro.minutes = this.pomodoro.pomodoro;
         this.pomodoro.seconds = 0;
+        this.zeroTimerP();
         this.pause(clockStart);
 
         this.long.minutes = this.pomodoro.error;
         this.short.minutes = this.pomodoro.error;
       }
+    },
+
+
+    zeroTimerP(){
+      if(this.pomodoro.seconds < 10){
+        this.zeros.zeroP = "0"
+      }else{
+        this.zeros.zeroP = ""
+      }
+    },  
+
+    zeroTimerS(){
+      if(this.short.seconds < 10){
+        this.zeros.zeroS = "0"
+      }else{
+        this.zeros.zeroS = ""
+      }
+
+    },
+
+    zeroTimerL(){
+      if(this.long.seconds < 10){
+        this.zeros.zeroL = "0"
+      }else{
+        this.zeros.zeroL = ""
+      }
+
     },
 
     start() {
@@ -162,22 +187,28 @@ export default {
           if (this.pomodoro.seconds == 0) {
             this.pomodoro.minutes--;
             this.pomodoro.seconds = 59;
+            this.zeroTimerP()
           } else {
             this.pomodoro.seconds--;
+            this.zeroTimerP()
           }
 
           if (this.short.seconds == 0) {
             this.short.minutes--;
             this.short.seconds = 59;
+            this.zeroTimerS()
           } else {
             this.short.seconds--;
+            this.zeroTimerS()
           }
 
           if (this.long.seconds == 0) {
             this.long.minutes--;
             this.long.seconds = 59;
+            this.zeroTimerL()
           } else {
             this.long.seconds--;
+            this.zeroTimerL()
           }
 
           if (this.pomodoro.minutes <= 0 && this.pomodoro.seconds <= 0) {

@@ -35,12 +35,12 @@
             v-for="(task, index) in tasks"
             :key="task.id"
             max-width="500"
-            :color=task.color
+            :color="task.color"
             class="mx-auto mt-3 d-flex align-center justify-space-between"
             elevation="5"
             @click="confirmTask(task)"
           >
-            <p class="textTesk taskConfirm ma-5">{{task.name}}</p>
+            <p class="textTesk taskConfirm ma-5">{{ task.name }}</p>
             <v-btn small class="my-5 mr-2" @click="removeTask(index)"
               >Remove</v-btn
             >
@@ -59,12 +59,11 @@ export default {
       buttonName: "Start",
 
       tasks: [],
-      textInput: "add a task",
+      textInput: "add task",
       taskId: 0,
       taskCounter: 0,
       letterCount: "",
       rules: [(v) => v.length <= 200 || "Max 200 characters"],
-      
     };
   },
 
@@ -82,27 +81,27 @@ export default {
       } else if (this.taskCounter == 5) {
         alert("task over the limit");
         this.letterCount = "";
-        this.textInput = "Finish a task";
+        this.textInput = "Finish task";
       } else {
         const add = {
           name: task,
           id: this.taskId,
-          color: "white"
+          color: "white",
         };
         this.letterCount = "";
         this.taskId++;
         this.taskCounter++;
         this.clearInput();
         this.tasks.push(add);
-        this.textInput = "add a task";
+        this.textInput = "add task";
       }
     },
 
     confirmTask(task) {
-      if(task.color == 'white'){
-        task.color = 'green'
-      }else{
-        task.color = 'white'
+      if (task.color == "white") {
+        task.color = "green";
+      } else {
+        task.color = "white";
       }
     },
 
