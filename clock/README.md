@@ -1,4 +1,4 @@
-# burguers
+# Pomodoro Clock
 
 ## Project setup
 ```
